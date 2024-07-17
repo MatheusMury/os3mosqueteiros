@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var listInput = <String>[];
-  final TextEditingController inputController = TextEditingController();
+  final inputController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   String? inputIsNull(String? inputText) {
@@ -43,16 +43,20 @@ class _MyHomePageState extends State<MyHomePage> {
     return null;
   }
 
-  String? isEmptyValidate(String value) {
-    return value.isEmpty ? "O campo precisa ser preenchido" : null;
+  String? validateText(String? text) {
+    return text!.isEmpty ? "O campo precisa ser preenchido" : null;
   }
 
-  void addInputList() {
+  void validateAndSave() {
     if (formKey.currentState!.validate()) {
-      setState(() {
-        listInput.add(inputController.text);
-      });
+      formKey.currentState!.save();
     }
+  }
+
+  void addInputList(String? input) {
+    setState(() {
+      listInput.add(inputController.text);
+    });
   }
 
   @override
@@ -68,23 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-              validator: (value) {
-                if (value != null) {
-                  isEmptyValidate(value);
-                }
-              },
+              onSaved: addInputList,
+              validator: validateText,
               controller: inputController,
               decoration: const InputDecoration(
                 hintText: 'Insira um novo valor',
               ),
             ),
-            IconButton(
-              onPressed: addInputList,
-              icon: const Icon(
-                Icons.add,
-              ),
-            ),
-            Container(
+            SizedBox(
               height: 200,
               child: ListView.builder(
                 itemCount: listInput.length,
@@ -99,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: validateAndSave,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
