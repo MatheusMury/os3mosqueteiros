@@ -32,15 +32,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> list = [];
+  var listInput = <String>[];
   final TextEditingController inputController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
-  void _incrementCounter() {
-    setState(() {
-      if (inputController.text.isNotEmpty) {
-        list.add(inputController.text);
-      }
-    });
+  String? inputIsNull(String? inputText) {
+    if (inputText == null || inputText.isEmpty) {
+      return "O campo precisa ser preenchido";
+    }
+    return null;
+  }
+
+  String? isEmptyValidate(String value) {
+    return value.isEmpty ? "O campo precisa ser preenchido" : null;
+  }
+
+  void addInputList() {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        listInput.add(inputController.text);
+      });
+    }
   }
 
   @override
@@ -50,18 +62,24 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
+      body: Form(
+        key: formKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             TextFormField(
+              validator: (value) {
+                if (value != null) {
+                  isEmptyValidate(value);
+                }
+              },
               controller: inputController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Insira um novo valor',
               ),
             ),
             IconButton(
-              onPressed: _incrementCounter,
+              onPressed: addInputList,
               icon: const Icon(
                 Icons.add,
               ),
@@ -69,10 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               height: 200,
               child: ListView.builder(
-                itemCount: list.length,
+                itemCount: listInput.length,
                 itemBuilder: (_, index) {
                   return ListTile(
-                    title: Text(list[index]),
+                    title: Text(listInput[index]),
                   );
                 },
               ),
@@ -81,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {},
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
