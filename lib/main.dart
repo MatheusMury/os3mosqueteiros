@@ -7,7 +7,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,6 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final inputController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
+  Future<void> testeFunction() async {}
+
   String? inputIsNull(String? inputText) {
     if (inputText == null || inputText.isEmpty) {
       return "O campo precisa ser preenchido";
@@ -43,8 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return null;
   }
 
-  String? validateText(String? text) {
-    return text!.isEmpty ? "O campo precisa ser preenchido" : null;
+  String? validateText(String text) {
+    return text.isEmpty ? "O campo precisa ser preenchido" : null;
   }
 
   void validateAndSave() {
@@ -53,10 +54,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void addInputList(String? input) {
+  void addInputList(String input) async {
     setState(() {
       listInput.add(inputController.text);
     });
+    testeFunction();
   }
 
   @override
@@ -78,8 +80,16 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-              onSaved: addInputList,
-              validator: validateText,
+              onSaved: (list) {
+                if (list != null) {
+                  return addInputList(list);
+                }
+              },
+              validator: (value) {
+                if (value != null) {
+                  validateText(value);
+                }
+              },
               controller: inputController,
               decoration: const InputDecoration(
                 hintText: 'Insira um novo valor',
